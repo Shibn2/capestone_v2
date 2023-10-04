@@ -9,12 +9,16 @@ export class AppGatewayController {
   constructor(private readonly appGatewayService: AppGatewayService) {}
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async createOrder(@Body() request: CreateOrderRequest, @Req() req: any) {
-    return this.appGatewayService.createOrder(request, req.cookies?.Authentication);
+    return this.appGatewayService.createOrder(
+      request,
+      req.cookies?.Authentication,
+    );
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getOrders() {
     return this.appGatewayService.getOrders();
   }
@@ -22,13 +26,21 @@ export class AppGatewayController {
   //---------------------------- implementation
   @Post('order')
   async createOrderV2(@Body() request: CreateOrderRequest, @Req() req: any) {
-    console.log('hit at orders/order app-gateway.......................', request);
-    return this.appGatewayService.createOrderV2(request, req.cookies?.Authentication);
+    console.log(
+      'hit at orders/order app-gateway.......................',
+      request,
+    );
+    return this.appGatewayService.createOrderV2(
+      request,
+      req.cookies?.Authentication,
+    );
   }
 
   @Get('hello')
   getHello(): string {
-    console.log('hit --------------------------->>>>>>>>>>>>>> gateway controller');
+    console.log(
+      'hit --------------------------->>>>>>>>>>>>>> gateway controller',
+    );
     this.appGatewayService.sendHiToBilling();
     return 'Hello, World!!!';
     // return this.appGatewayService.getHello();
@@ -42,6 +54,9 @@ export class AppGatewayController {
 
   @EventPattern('fetched-order')
   async fetchOrders(@Payload() data: any) {
-    console.log('fetched-order - order received at app-gateway................data', data);
+    console.log(
+      'fetched-order - order received at app-gateway................data',
+      data,
+    );
   }
 }

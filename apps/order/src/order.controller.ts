@@ -1,46 +1,46 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { RmqService, JwtAuthGuard } from '@app/common';
-import { BillingService } from './billing.service';
+import { OrderService } from './order.service';
 
 @Controller()
-export class BillingController {
+export class OrderController {
   constructor(
-    private readonly billingService: BillingService,
+    private readonly orderService: OrderService,
     private readonly rmqService: RmqService,
   ) {}
 
   @Get()
   getHello(): string {
-    return this.billingService.getHello();
+    return this.orderService.getHello();
   }
 
   @EventPattern('order_created')
   @UseGuards(JwtAuthGuard)
   async handleOrderCreated(@Payload() data: any, @Ctx() context: RmqContext) {
-    this.billingService.bill(data);
+    this.orderService.bill(data);
     this.rmqService.ack(context);
   }
 
   //---------------------------------
   @EventPattern('create_order_v2')
   async handleOrderCreatedV2(@Payload() data: any, @Ctx() context: RmqContext) {
-    console.log('.......................... create_order_v2 in billing', data);
-    this.billingService.createOrder(data.request);
+    console.log('........................... create_order_v2 in order ctrl ', data)
+    this.orderService.createOrder(data.request);
     this.rmqService.ack(context);
   }
 
   @EventPattern('fetch_order_v2')
   async fetchOrders() {
-    console.log('........................... get order ctrlr - billing');
-    return this.billingService.getOrders();
+    console.log('........................... get order ctrl order ctrl');
+    return this.orderService.getOrders();
   }
 
-  @EventPattern('hi_received')
+  @EventPattern('hi_received_order')
   async handleHiFromGateway(@Ctx() context: RmqContext) {
-    console.log(
-      '........................... From billing , hi received from gateway',
-    );
+    console.log('........................... from order , hi received from gateway order ctrl');
     this.rmqService.ack(context);
   }
 }
+
+// /Users/shilal/Documents/In_/excelerator/Case_study/Capestone_V2Ref/capestone_v1.9/capestone_v2/apps/order/src

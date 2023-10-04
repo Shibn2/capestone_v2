@@ -6,37 +6,28 @@ import { OrdersRepository } from './orders.repository';
 import { APP_GATEWAY } from './constants/services';
 
 @Injectable()
-export class BillingService {
-  constructor(
+export class OrderService {
+  constructor(    
     private readonly ordersRepository: OrdersRepository,
     @Inject(APP_GATEWAY) private gatewayClient: ClientProxy,
-  ) {}
-  private readonly logger = new Logger(BillingService.name);
+    ){}
+  private readonly logger = new Logger(OrderService.name);
 
   getHello(): string {
     return 'Hello World!';
   }
 
-  async getOrders() {
-    console.log('get order in billing svc');
-    return this.ordersRepository.find({});
-  }
-
   bill(data: any) {
-    this.logger.log('Billing...', data);
+    this.logger.log('Order...', data);
   }
 
   // --------------------
   async createOrder(request: CreateOrderRequest) {
-    console.log('........................... Hit at billing service');
+    console.log('........................... Hit at order service order svc')
     const session = await this.ordersRepository.startTransaction();
     try {
       const order = await this.ordersRepository.create(request, { session });
-      console.log(
-        '.......................... in billing svc create order, after create',
-        order,
-      );
-      this.bill(order);
+      console.log('in order svc create order, after create', order)
       await session.commitTransaction();
       return order;
     } catch (err) {
@@ -46,7 +37,7 @@ export class BillingService {
   }
 
   async getOrders() {
-    console.log('........................... get order svc - billing');
+    console.log('........................... get order svc - order order svc');
     const orders = await this.ordersRepository.find({});
     await this.gatewayClient.emit('fetched-order', orders);
     console.log('orders', orders);

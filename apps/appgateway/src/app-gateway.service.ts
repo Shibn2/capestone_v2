@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { BILLING_SERVICE } from './constants/services';
+import { BILLING_SERVICE, ORDER_SERVICE } from './constants/services';
 import { CreateOrderRequest } from './dto/create-order.request';
 import { OrdersRepository } from './orders.repository';
 
@@ -10,6 +10,7 @@ export class AppGatewayService {
   constructor(
     private readonly ordersRepository: OrdersRepository,
     @Inject(BILLING_SERVICE) private billingClient: ClientProxy,
+    @Inject(ORDER_SERVICE) private orderClient: ClientProxy,
   ) {}
 
   async createOrder(request: CreateOrderRequest, authentication: string) {
@@ -58,6 +59,7 @@ export class AppGatewayService {
 
   sendHiToBilling(){
     console.log('----------------- gateway service');
+    this.orderClient.emit('hi_received_order', {});
     this.billingClient.emit('hi_received', {});
   }
 }
